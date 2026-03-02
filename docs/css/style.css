@@ -1,0 +1,546 @@
+/* ============================================================
+   Reset & Base
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --primary: #4A90D9;
+  --primary-dark: #2c6faf;
+  --primary-light: #e8f2fc;
+  --success: #27ae60;
+  --danger: #e74c3c;
+  --warning: #f39c12;
+  --text: #333;
+  --text-muted: #888;
+  --border: #ddd;
+  --bg: #f5f7fa;
+  --card: #fff;
+  --radius: 10px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --nav-h: 56px;
+}
+
+html { font-size: 16px; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: calc(var(--nav-h) + 8px);
+}
+
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ============================================================
+   Header
+   ============================================================ */
+.app-header {
+  background: var(--primary);
+  color: white;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.app-header h1 { font-size: 1.1rem; font-weight: 700; }
+.header-icons { display: flex; gap: 12px; }
+.header-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.header-btn:hover { background: rgba(255,255,255,0.2); }
+
+/* ============================================================
+   Bottom Nav
+   ============================================================ */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-h);
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  display: flex;
+  z-index: 100;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  transition: color 0.15s;
+}
+.nav-item .icon { font-size: 1.4rem; line-height: 1; }
+.nav-item.active { color: var(--primary); }
+.nav-item:hover { color: var(--primary); }
+
+/* ============================================================
+   Main Container
+   ============================================================ */
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 12px;
+}
+
+/* ============================================================
+   Card
+   ============================================================ */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+/* ============================================================
+   Calendar
+   ============================================================ */
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.calendar-title { font-size: 1.1rem; font-weight: 700; }
+.cal-nav-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--text);
+  transition: background 0.15s;
+}
+.cal-nav-btn:hover { background: var(--primary-light); }
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+.cal-dow {
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  padding: 4px 0;
+}
+.cal-dow.sun { color: #e74c3c; }
+.cal-dow.sat { color: #3498db; }
+
+.cal-day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  position: relative;
+  transition: background 0.15s;
+  border: 2px solid transparent;
+}
+.cal-day:hover { background: var(--primary-light); }
+.cal-day.other-month { color: #ccc; }
+.cal-day.today { color: var(--primary); font-weight: 700; }
+.cal-day.today::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+.cal-day.selected {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary-dark);
+}
+.cal-day.selected.today::after { background: white; }
+.cal-day.has-task { font-weight: 700; }
+.cal-day .task-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--warning);
+  position: absolute;
+  top: 3px;
+  right: 3px;
+}
+.cal-day.has-recurring .task-dot { background: var(--success); }
+
+/* ============================================================
+   Task List
+   ============================================================ */
+.section-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.task-list { display: flex; flex-direction: column; gap: 8px; }
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  transition: box-shadow 0.15s;
+}
+.task-item:hover { box-shadow: var(--shadow); }
+.task-item.completed { opacity: 0.55; }
+.task-item.completed .task-title { text-decoration: line-through; }
+
+.task-check {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  transition: all 0.15s;
+}
+.task-check:hover { border-color: var(--success); }
+.task-check.done {
+  background: var(--success);
+  border-color: var(--success);
+  color: white;
+}
+
+.task-body { flex: 1; min-width: 0; }
+.task-title { font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.task-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+.task-link { font-size: 0.75rem; color: var(--primary); }
+
+.task-del-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+.task-del-btn:hover { color: var(--danger); }
+
+/* ============================================================
+   Add Task Form
+   ============================================================ */
+.add-task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.form-row { display: flex; gap: 8px; }
+.form-row input, .form-row select, .form-row textarea {
+  flex: 1;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="date"],
+input[type="time"],
+input[type="number"],
+input[type="url"],
+select,
+textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--card);
+  outline: none;
+  transition: border-color 0.15s;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+textarea { resize: vertical; min-height: 60px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-family: inherit;
+  font-weight: 600;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-success { background: var(--success); color: white; }
+.btn-danger { background: var(--danger); color: white; }
+.btn-outline {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.btn-outline:hover { background: var(--bg); }
+.btn-sm { padding: 5px 10px; font-size: 0.82rem; }
+.btn-full { width: 100%; }
+
+/* ============================================================
+   Tabs
+   ============================================================ */
+.tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 16px;
+}
+.tab-btn {
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.15s;
+}
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 700; }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* ============================================================
+   Recurring Task Item
+   ============================================================ */
+.recurring-item {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  background: var(--card);
+}
+.recurring-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+.recurring-title { font-weight: 700; font-size: 0.95rem; }
+.recurring-meta { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; }
+.recurring-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--primary-light);
+  color: var(--primary);
+  margin-left: 6px;
+}
+.badge.success { background: #eafaf1; color: var(--success); }
+.badge.warning { background: #fef9e7; color: var(--warning); }
+
+/* ============================================================
+   Settings
+   ============================================================ */
+.setting-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.setting-label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.setting-hint { font-size: 0.78rem; color: var(--text-muted); }
+
+/* ============================================================
+   Toast notification
+   ============================================================ */
+#toast-container {
+  position: fixed;
+  top: 70px;
+  right: 12px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  background: #333;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  animation: slideIn 0.2s ease, fadeOut 0.3s ease 2.7s forwards;
+  pointer-events: auto;
+}
+.toast.success { background: var(--success); }
+.toast.error   { background: var(--danger); }
+.toast.info    { background: var(--primary); }
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes fadeOut {
+  to { opacity: 0; transform: translateY(-8px); }
+}
+
+/* ============================================================
+   Modal
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+.modal-overlay.center { align-items: center; padding: 16px; }
+.modal {
+  background: var(--card);
+  border-radius: 16px 16px 0 0;
+  padding: 20px 16px 32px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp 0.2s ease;
+}
+.modal-overlay.center .modal {
+  border-radius: 16px;
+  padding: 20px;
+  animation: fadeInScale 0.2s ease;
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+@keyframes fadeInScale {
+  from { transform: scale(0.9); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+.modal-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* ============================================================
+   Occurrence badge (calendar)
+   ============================================================ */
+.occ-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--success);
+  display: inline-block;
+  margin-left: 2px;
+  vertical-align: middle;
+}
+
+/* ============================================================
+   Notification bell badge
+   ============================================================ */
+.notif-badge {
+  background: var(--danger);
+  color: white;
+  border-radius: 50%;
+  width: 16px; height: 16px;
+  font-size: 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0; right: 0;
+}
+
+/* ============================================================
+   Empty state
+   ============================================================ */
+.empty-state {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--text-muted);
+}
+.empty-state .icon { font-size: 2.5rem; margin-bottom: 8px; }
+
+/* ============================================================
+   Utilities
+   ============================================================ */
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.flex { display: flex; }
+.gap-8 { gap: 8px; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.text-muted { color: var(--text-muted); font-size: 0.85rem; }
+.text-sm { font-size: 0.85rem; }
+.hidden { display: none !important; }
+.loading { opacity: 0.5; pointer-events: none; }
+
+/* ============================================================
+   Desktop enhancements
+   ============================================================ */
+@media (min-width: 600px) {
+  .container { padding: 16px; }
+  .calendar-grid { gap: 4px; }
+  .cal-day { font-size: 0.95rem; }
+  .modal-overlay { align-items: center; padding: 16px; }
+  .modal { border-radius: 16px; animation: fadeInScale 0.2s ease; }
+}
+
+@media (min-width: 900px) {
+  .container { padding: 24px; }
+  .app-header h1 { font-size: 1.2rem; }
+}

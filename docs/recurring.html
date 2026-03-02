@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>定期タスク - スケジュール管理</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4A90D9">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="スケジュール">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>🔄 定期タスク</h1>
+    <div class="header-icons">
+      <button class="header-btn" id="add-recurring-btn" title="追加">＋</button>
+    </div>
+  </header>
+
+  <div id="toast-container"></div>
+
+  <div class="container">
+    <div class="card">
+      <div class="section-title">定期タスク一覧</div>
+      <div id="recurring-list">
+        <div class="empty-state">
+          <div class="icon">🔄</div>
+          <p>定期タスクがありません</p>
+          <button class="btn btn-primary mt-8" id="add-recurring-empty-btn">＋ 追加する</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 定期タスク追加/編集モーダル -->
+  <div class="modal-overlay hidden" id="recurring-modal">
+    <div class="modal">
+      <div class="modal-title" id="recurring-modal-title">定期タスクを追加</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <input type="hidden" id="edit-recurring-id">
+        <input type="text" id="rt-title" placeholder="タスク名 *" maxlength="200">
+        <input type="url" id="rt-link" placeholder="URL（任意）">
+        <textarea id="rt-desc" placeholder="詳細（任意）" rows="2"></textarea>
+        <div class="form-row">
+          <div style="flex:1;">
+            <label class="setting-label">繰り返し間隔</label>
+            <select id="rt-interval">
+              <option value="daily">毎日</option>
+              <option value="weekly">毎週</option>
+              <option value="biweekly">隔週（2週ごと）</option>
+              <option value="3weekly">3週ごと</option>
+              <option value="monthly" selected>毎月</option>
+              <option value="2monthly">2ヶ月ごと</option>
+              <option value="3monthly">3ヶ月ごと</option>
+              <option value="halfyear">半年ごと</option>
+            </select>
+          </div>
+          <div style="flex:1;">
+            <label class="setting-label">開始日</label>
+            <input type="date" id="rt-start">
+          </div>
+        </div>
+        <div>
+          <label class="setting-label">事前通知（何日前）</label>
+          <input type="number" id="rt-notify" min="0" max="30" value="3">
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-outline" id="cancel-recurring">キャンセル</button>
+        <button class="btn btn-primary" id="submit-recurring">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="index.html" class="nav-item">
+      <span class="icon">📅</span>
+      <span>カレンダー</span>
+    </a>
+    <a href="completed.html" class="nav-item">
+      <span class="icon">✅</span>
+      <span>完了済み</span>
+    </a>
+    <a href="recurring.html" class="nav-item active">
+      <span class="icon">🔄</span>
+      <span>定期タスク</span>
+    </a>
+    <a href="settings.html" class="nav-item">
+      <span class="icon">⚙️</span>
+      <span>設定</span>
+    </a>
+  </nav>
+
+  <script src="js/app.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/recurring.js"></script>
+</body>
+</html>

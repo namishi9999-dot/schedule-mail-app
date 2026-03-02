@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>設定 - スケジュール管理</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4A90D9">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="スケジュール">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>⚙️ 設定</h1>
+  </header>
+
+  <div id="toast-container"></div>
+
+  <div class="container">
+    <div class="card">
+      <div class="modal-title">データ管理</div>
+      <p class="text-muted" style="margin-bottom:16px;">
+        データはこのデバイスのブラウザ（localStorage）に保存されています。
+      </p>
+      <div class="form-row mt-8">
+        <button class="btn btn-outline" id="export-btn">📤 データをエクスポート</button>
+        <button class="btn btn-outline" id="import-btn-trigger">📥 データをインポート</button>
+      </div>
+      <input type="file" id="import-file" accept=".json" style="display:none">
+    </div>
+
+    <div class="card">
+      <div class="modal-title">アプリについて</div>
+      <p class="text-muted">
+        スケジュール管理アプリ（GitHub Pages 静的版）<br>
+        PWA対応（ホーム画面に追加可能）<br>
+        データ保存: ブラウザ localStorage
+      </p>
+      <div id="install-prompt-area" class="mt-8 hidden">
+        <button class="btn btn-primary btn-full" id="install-pwa-btn">📱 ホーム画面に追加</button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="index.html" class="nav-item">
+      <span class="icon">📅</span>
+      <span>カレンダー</span>
+    </a>
+    <a href="completed.html" class="nav-item">
+      <span class="icon">✅</span>
+      <span>完了済み</span>
+    </a>
+    <a href="recurring.html" class="nav-item">
+      <span class="icon">🔄</span>
+      <span>定期タスク</span>
+    </a>
+    <a href="settings.html" class="nav-item active">
+      <span class="icon">⚙️</span>
+      <span>設定</span>
+    </a>
+  </nav>
+
+  <script src="js/app.js"></script>
+  <script src="js/storage.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // エクスポート
+      document.getElementById('export-btn').addEventListener('click', () => {
+        const data = {
+          tasks: JSON.parse(localStorage.getItem('tasks') || '[]'),
+          recurring_tasks: JSON.parse(localStorage.getItem('recurring_tasks') || '[]'),
+          task_occurrences: JSON.parse(localStorage.getItem('task_occurrences') || '[]'),
+          exported_at: new Date().toISOString(),
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `schedule-backup-${todayStr()}.json`;
+        a.click();
+        showToast('エクスポートしました', 'success');
+      });
+
+      // インポート
+      document.getElementById('import-btn-trigger').addEventListener('click', () => {
+        document.getElementById('import-file').click();
+      });
+      document.getElementById('import-file').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          try {
+            const data = JSON.parse(ev.target.result);
+            if (data.tasks) localStorage.setItem('tasks', JSON.stringify(data.tasks));
+            if (data.recurring_tasks) localStorage.setItem('recurring_tasks', JSON.stringify(data.recurring_tasks));
+            if (data.task_occurrences) localStorage.setItem('task_occurrences', JSON.stringify(data.task_occurrences));
+            showToast('インポートしました ✅', 'success');
+          } catch {
+            showToast('ファイルが正しくありません', 'error');
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+      });
+    });
+  </script>
+</body>
+</html>
