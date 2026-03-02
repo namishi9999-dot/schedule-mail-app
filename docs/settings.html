@@ -21,6 +21,83 @@
   <div id="toast-container"></div>
 
   <div class="container">
+
+    <!-- メール通知設定 -->
+    <div class="card">
+      <div class="modal-title">📧 メール通知設定（Gmail）</div>
+      <p class="text-muted" style="margin-bottom:12px;">
+        アプリを開いた時に自動でスケジュールをメール送信します。<br>
+        送信には <a href="https://www.emailjs.com/" target="_blank" rel="noopener">EmailJS</a>（無料・月200通）を使用します。
+      </p>
+
+      <!-- セットアップ手順（折りたたみ） -->
+      <details style="margin-bottom:12px;">
+        <summary style="cursor:pointer; color:var(--primary); font-size:0.9em;">▶ EmailJS の初回設定手順（ここをタップ）</summary>
+        <ol class="text-muted" style="margin:8px 0 0 20px; line-height:2;">
+          <li><a href="https://www.emailjs.com/" target="_blank" rel="noopener">emailjs.com</a> にアクセスしてアカウント作成</li>
+          <li>「Email Services」→「Add New Service」→「Gmail」を選択して接続</li>
+          <li>「Email Templates」→「Create New Template」<br>
+            テンプレートの本文に <code>{{message}}</code> を入れて保存</li>
+          <li>「Account」→「General」にある <strong>Public Key</strong> をコピー</li>
+          <li>Service ID・Template ID・Public Key を下に入力して保存</li>
+        </ol>
+      </details>
+
+      <div class="setting-row">
+        <label class="setting-label">Public Key</label>
+        <input type="text" id="ejs-public-key" placeholder="例: AbCdEfGhIjKlMnOpQ">
+      </div>
+      <div class="setting-row">
+        <label class="setting-label">Service ID</label>
+        <input type="text" id="ejs-service-id" placeholder="例: service_xxxxxxx">
+      </div>
+      <div class="setting-row">
+        <label class="setting-label">Template ID</label>
+        <input type="text" id="ejs-template-id" placeholder="例: template_xxxxxxx">
+      </div>
+      <div class="setting-row">
+        <label class="setting-label">送信先メール</label>
+        <input type="email" id="ejs-to-email" placeholder="your@gmail.com">
+      </div>
+
+      <div class="form-row" style="gap:12px; margin-top:4px;">
+        <div style="flex:1;">
+          <label class="setting-label">送信頻度</label>
+          <select id="ejs-frequency">
+            <option value="daily">毎日</option>
+            <option value="weekly">毎週（曜日指定）</option>
+          </select>
+        </div>
+        <div style="flex:1;" id="ejs-dow-wrap">
+          <label class="setting-label">曜日</label>
+          <select id="ejs-send-dow">
+            <option value="0">日曜日</option>
+            <option value="1">月曜日</option>
+            <option value="2">火曜日</option>
+            <option value="3">水曜日</option>
+            <option value="4">木曜日</option>
+            <option value="5">金曜日</option>
+            <option value="6">土曜日</option>
+          </select>
+        </div>
+        <div style="flex:1;">
+          <label class="setting-label">送信時刻</label>
+          <input type="time" id="ejs-send-time" value="08:00">
+        </div>
+      </div>
+
+      <div class="form-row" style="margin-top:8px; align-items:center; gap:8px;">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+          <input type="checkbox" id="ejs-enabled"> 自動送信を有効にする
+        </label>
+      </div>
+
+      <div class="form-row mt-8">
+        <button class="btn btn-primary" id="save-email-settings-btn">💾 保存</button>
+        <button class="btn btn-outline" id="send-test-email-btn">📧 今すぐ送信テスト</button>
+      </div>
+    </div>
+
     <div class="card">
       <div class="modal-title">データ管理</div>
       <p class="text-muted" style="margin-bottom:16px;">
@@ -67,8 +144,47 @@
 
   <script src="js/app.js"></script>
   <script src="js/storage.js"></script>
+  <script src="js/email-notify.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      // メール設定の読み込み
+      const es = getEmailSettings();
+      if (es.publicKey)   document.getElementById('ejs-public-key').value  = es.publicKey;
+      if (es.serviceId)   document.getElementById('ejs-service-id').value  = es.serviceId;
+      if (es.templateId)  document.getElementById('ejs-template-id').value = es.templateId;
+      if (es.toEmail)     document.getElementById('ejs-to-email').value    = es.toEmail;
+      if (es.frequency)   document.getElementById('ejs-frequency').value   = es.frequency;
+      if (es.sendDow != null) document.getElementById('ejs-send-dow').value = es.sendDow;
+      if (es.sendTime)    document.getElementById('ejs-send-time').value   = es.sendTime;
+      if (es.enabled)     document.getElementById('ejs-enabled').checked   = true;
+
+      // 頻度切替で曜日表示制御
+      const toggleDow = () => {
+        document.getElementById('ejs-dow-wrap').style.display =
+          document.getElementById('ejs-frequency').value === 'weekly' ? '' : 'none';
+      };
+      document.getElementById('ejs-frequency').addEventListener('change', toggleDow);
+      toggleDow();
+
+      // メール設定保存
+      document.getElementById('save-email-settings-btn').addEventListener('click', () => {
+        saveEmailSettings({
+          publicKey:  document.getElementById('ejs-public-key').value.trim(),
+          serviceId:  document.getElementById('ejs-service-id').value.trim(),
+          templateId: document.getElementById('ejs-template-id').value.trim(),
+          toEmail:    document.getElementById('ejs-to-email').value.trim(),
+          frequency:  document.getElementById('ejs-frequency').value,
+          sendDow:    document.getElementById('ejs-send-dow').value,
+          sendTime:   document.getElementById('ejs-send-time').value,
+          enabled:    document.getElementById('ejs-enabled').checked,
+          lastSent:   getEmailSettings().lastSent || '',
+        });
+        showToast('メール設定を保存しました ✅', 'success');
+      });
+
+      // 手動テスト送信
+      document.getElementById('send-test-email-btn').addEventListener('click', sendScheduleMailNow);
+
       // エクスポート
       document.getElementById('export-btn').addEventListener('click', () => {
         const data = {

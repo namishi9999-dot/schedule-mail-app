@@ -54,12 +54,15 @@
   <script src="js/app.js"></script>
   <script src="js/storage.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    function renderCompleted() {
       const list = document.getElementById('completed-list');
       const tasks = getCompletedTasks();
-      if (!tasks.length) return;
+      if (!tasks.length) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">✅</div><p>完了済みタスクはありません</p></div>';
+        return;
+      }
       list.innerHTML = tasks.map(t => `
-        <div class="task-item completed">
+        <div class="task-item completed" data-id="${t.id}">
           <div class="task-check done">✓</div>
           <div class="task-body">
             <div class="task-title">${escapeHtml(t.title)}</div>
@@ -69,9 +72,20 @@
             </div>
             ${t.description ? `<div class="task-meta">${escapeHtml(t.description)}</div>` : ''}
           </div>
+          <button class="btn btn-outline btn-sm" data-undo="${t.id}" style="white-space:nowrap;flex-shrink:0;">↩ 復帰</button>
         </div>
       `).join('');
-    });
+
+      list.querySelectorAll('[data-undo]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          uncompleteTask(btn.dataset.undo);
+          showToast('タスクを未完了に戻しました', 'info');
+          renderCompleted();
+        });
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', renderCompleted);
   </script>
 </body>
 </html>

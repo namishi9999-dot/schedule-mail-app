@@ -56,6 +56,16 @@ function completeTask(id) {
   return task;
 }
 
+function uncompleteTask(id) {
+  const tasks = _loadTasks();
+  const task = tasks.find(t => t.id == id);
+  if (!task) return null;
+  task.completed = 0;
+  task.completed_at = null;
+  _saveTasks(tasks);
+  return task;
+}
+
 function deleteTask(id) {
   _saveTasks(_loadTasks().filter(t => t.id != id));
 }

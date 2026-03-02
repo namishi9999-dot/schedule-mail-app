@@ -113,8 +113,15 @@
 
   <script src="js/app.js"></script>
   <script src="js/storage.js"></script>
+  <script src="js/email-notify.js"></script>
   <script src="js/calendar.js"></script>
   <script src="js/tasks.js"></script>
   <script src="js/notify.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 起動時に定期メール自動チェック（設定済みの場合のみ送信）
+      checkAndSendScheduleMail();
+    });
+  </script>
 </body>
 </html>
